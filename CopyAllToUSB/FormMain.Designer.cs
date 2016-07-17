@@ -31,15 +31,16 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMain));
             this.txtBoxSourcePath = new System.Windows.Forms.TextBox();
-            this.txtBoxDestinationPath = new System.Windows.Forms.TextBox();
             this.buttonExecuter = new System.Windows.Forms.Button();
             this.buttonSource = new System.Windows.Forms.Button();
             this.buttonDestination = new System.Windows.Forms.Button();
-            this.buttonSauveConfig = new System.Windows.Forms.Button();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.toolTip2 = new System.Windows.Forms.ToolTip(this.components);
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.labelCopieEnCours = new System.Windows.Forms.Label();
+            this.labelSource = new System.Windows.Forms.Label();
+            this.labelDestination = new System.Windows.Forms.Label();
+            this.txtBoxDestinationPath = new System.Windows.Forms.TextBox();
+            this.labelPathEnCours = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -49,23 +50,16 @@
             this.txtBoxSourcePath.Name = "txtBoxSourcePath";
             this.txtBoxSourcePath.Size = new System.Drawing.Size(340, 20);
             this.txtBoxSourcePath.TabIndex = 0;
-            // 
-            // txtBoxDestinationPath
-            // 
-            this.txtBoxDestinationPath.Location = new System.Drawing.Point(12, 61);
-            this.txtBoxDestinationPath.Name = "txtBoxDestinationPath";
-            this.txtBoxDestinationPath.Size = new System.Drawing.Size(340, 20);
-            this.txtBoxDestinationPath.TabIndex = 1;
+            this.txtBoxSourcePath.TextChanged += new System.EventHandler(this.txtBoxSourcePath_TextChanged);
             // 
             // buttonExecuter
             // 
-            this.buttonExecuter.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.buttonExecuter.Location = new System.Drawing.Point(12, 105);
+            this.buttonExecuter.Location = new System.Drawing.Point(12, 119);
             this.buttonExecuter.Name = "buttonExecuter";
-            this.buttonExecuter.Size = new System.Drawing.Size(95, 23);
+            this.buttonExecuter.Size = new System.Drawing.Size(57, 44);
             this.buttonExecuter.TabIndex = 2;
             this.buttonExecuter.Text = "Exécuter";
-            this.toolTip2.SetToolTip(this.buttonExecuter, "Exécuter une sauvegarde");
+            this.toolTip2.SetToolTip(this.buttonExecuter, "Executer une sauvegarde");
             this.buttonExecuter.UseVisualStyleBackColor = true;
             this.buttonExecuter.Click += new System.EventHandler(this.buttonExecuter_Click);
             // 
@@ -73,8 +67,7 @@
             // 
             this.buttonSource.FlatAppearance.BorderColor = System.Drawing.Color.White;
             this.buttonSource.FlatAppearance.BorderSize = 0;
-            this.buttonSource.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.buttonSource.Location = new System.Drawing.Point(358, 20);
+            this.buttonSource.Location = new System.Drawing.Point(358, 21);
             this.buttonSource.Name = "buttonSource";
             this.buttonSource.Size = new System.Drawing.Size(40, 20);
             this.buttonSource.TabIndex = 3;
@@ -84,7 +77,7 @@
             // 
             // buttonDestination
             // 
-            this.buttonDestination.Location = new System.Drawing.Point(358, 60);
+            this.buttonDestination.Location = new System.Drawing.Point(358, 61);
             this.buttonDestination.Name = "buttonDestination";
             this.buttonDestination.Size = new System.Drawing.Size(40, 20);
             this.buttonDestination.TabIndex = 4;
@@ -92,42 +85,58 @@
             this.buttonDestination.UseVisualStyleBackColor = true;
             this.buttonDestination.Click += new System.EventHandler(this.buttonDestination_Click);
             // 
-            // buttonSauveConfig
-            // 
-            this.buttonSauveConfig.Location = new System.Drawing.Point(157, 105);
-            this.buttonSauveConfig.Name = "buttonSauveConfig";
-            this.buttonSauveConfig.Size = new System.Drawing.Size(75, 23);
-            this.buttonSauveConfig.TabIndex = 5;
-            this.buttonSauveConfig.Text = "Enregistrer";
-            this.toolTip1.SetToolTip(this.buttonSauveConfig, "Pour enregistrer les paramétres actuels");
-            this.buttonSauveConfig.UseVisualStyleBackColor = true;
-            this.buttonSauveConfig.Click += new System.EventHandler(this.buttonSauveConfig_Click);
-            // 
             // pictureBox1
             // 
             this.pictureBox1.Image = global::CopyAllToUSB.Properties.Resources.logo;
-            this.pictureBox1.Location = new System.Drawing.Point(223, 156);
+            this.pictureBox1.Location = new System.Drawing.Point(177, 119);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(175, 29);
             this.pictureBox1.TabIndex = 6;
             this.pictureBox1.TabStop = false;
             // 
-            // labelCopieEnCours
+            // labelSource
             // 
-            this.labelCopieEnCours.AutoSize = true;
-            this.labelCopieEnCours.Location = new System.Drawing.Point(13, 135);
-            this.labelCopieEnCours.Name = "labelCopieEnCours";
-            this.labelCopieEnCours.Size = new System.Drawing.Size(0, 13);
-            this.labelCopieEnCours.TabIndex = 7;
+            this.labelSource.AutoSize = true;
+            this.labelSource.Location = new System.Drawing.Point(10, 2);
+            this.labelSource.Name = "labelSource";
+            this.labelSource.Size = new System.Drawing.Size(41, 13);
+            this.labelSource.TabIndex = 8;
+            this.labelSource.Text = "Source";
+            // 
+            // labelDestination
+            // 
+            this.labelDestination.AutoSize = true;
+            this.labelDestination.Location = new System.Drawing.Point(10, 45);
+            this.labelDestination.Name = "labelDestination";
+            this.labelDestination.Size = new System.Drawing.Size(60, 13);
+            this.labelDestination.TabIndex = 9;
+            this.labelDestination.Text = "Destination";
+            // 
+            // txtBoxDestinationPath
+            // 
+            this.txtBoxDestinationPath.Location = new System.Drawing.Point(12, 61);
+            this.txtBoxDestinationPath.Name = "txtBoxDestinationPath";
+            this.txtBoxDestinationPath.Size = new System.Drawing.Size(340, 20);
+            this.txtBoxDestinationPath.TabIndex = 1;
+            // 
+            // labelPathEnCours
+            // 
+            this.labelPathEnCours.AutoSize = true;
+            this.labelPathEnCours.Location = new System.Drawing.Point(12, 88);
+            this.labelPathEnCours.Name = "labelPathEnCours";
+            this.labelPathEnCours.Size = new System.Drawing.Size(35, 13);
+            this.labelPathEnCours.TabIndex = 10;
+            this.labelPathEnCours.Text = "label1";
             // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(410, 197);
-            this.Controls.Add(this.labelCopieEnCours);
+            this.ClientSize = new System.Drawing.Size(410, 183);
+            this.Controls.Add(this.labelPathEnCours);
+            this.Controls.Add(this.labelDestination);
+            this.Controls.Add(this.labelSource);
             this.Controls.Add(this.pictureBox1);
-            this.Controls.Add(this.buttonSauveConfig);
             this.Controls.Add(this.buttonDestination);
             this.Controls.Add(this.buttonSource);
             this.Controls.Add(this.buttonExecuter);
@@ -145,15 +154,16 @@
         #endregion
 
         private System.Windows.Forms.TextBox txtBoxSourcePath;
-        private System.Windows.Forms.TextBox txtBoxDestinationPath;
         private System.Windows.Forms.Button buttonExecuter;
         private System.Windows.Forms.Button buttonSource;
         private System.Windows.Forms.Button buttonDestination;
-        private System.Windows.Forms.Button buttonSauveConfig;
         private System.Windows.Forms.ToolTip toolTip1;
         private System.Windows.Forms.ToolTip toolTip2;
         private System.Windows.Forms.PictureBox pictureBox1;
-        private System.Windows.Forms.Label labelCopieEnCours;
+        private System.Windows.Forms.Label labelSource;
+        private System.Windows.Forms.Label labelDestination;
+        private System.Windows.Forms.TextBox txtBoxDestinationPath;
+        private System.Windows.Forms.Label labelPathEnCours;
     }
 }
 

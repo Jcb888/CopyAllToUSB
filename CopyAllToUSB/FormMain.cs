@@ -23,7 +23,7 @@ namespace CopyAllToUSB
         {
             InitializeComponent();
             string[] args = Environment.GetCommandLineArgs();//pour récupérer les arguments de la ligne de commande
-
+            labelPathEnCours.Text = "";
             XmlSerializer xs = new XmlSerializer(typeof(configObject));//pour serialiser en XML la config (sauvegarde des paths src et dst)
             using (StreamReader rd = new StreamReader("config.xml"))
             {
@@ -37,7 +37,7 @@ namespace CopyAllToUSB
             if (args[0] == "hide")
             {
                 this.SetVisibleCore(false);
-                this.copyAll();
+                this.lancerLaCopie();
             }
 
         }
@@ -50,38 +50,30 @@ namespace CopyAllToUSB
             base.SetVisibleCore(value);
         }
 
-        public void copyAll()
-        {
-            //On copy déja toute l'arborescense
-            foreach (string dirPath in Directory.GetDirectories(co.strSourcePath, "*", SearchOption.AllDirectories))
-                Directory.CreateDirectory(dirPath.Replace(co.strSourcePath, co.strDestinationPath));
+        //public void copyAll()
+        //{
+        //    //On copy déja toute l'arborescense
+        //    foreach (string dirPath in Directory.GetDirectories(co.strSourcePath, "*", SearchOption.AllDirectories))
+        //        Directory.CreateDirectory(dirPath.Replace(co.strSourcePath, co.strDestinationPath));
 
-            //On copie tout les fichiers
-            foreach (string newPath in Directory.GetFiles(co.strSourcePath, "*.*",
-                SearchOption.AllDirectories))
-                File.Copy(newPath, newPath.Replace(co.strSourcePath, co.strDestinationPath), true);
-        }
+        //    //On copie tout les fichiers
+        //    foreach (string newPath in Directory.GetFiles(co.strSourcePath, "*.*",
+        //        SearchOption.AllDirectories))
+        //        File.Copy(newPath, newPath.Replace(co.strSourcePath, co.strDestinationPath), true);
+        //}
 
         /// <summary>
         /// Pour sérialiser l'objet contenant strSourcePath et strDestinationPath dans le fichier XML config.xml 
         /// </summary>
         private void creatXML()
         {
+
+            if (!verifierLaConfig())
+                return;
+
+
             try
             {
-
-                if (co.strDestinationPath == "")
-                {
-                    MessageBox.Show("Veuillez choisir une destination");
-                    return;
-                }
-
-                if (co.strSourcePath == "")
-                {
-                    MessageBox.Show("Veuillez choisir la source");
-                    return;
-
-                }
 
                 XmlSerializer xs = new XmlSerializer(typeof(configObject));
                 using (StreamWriter wr = new StreamWriter("config.xml"))
@@ -89,13 +81,13 @@ namespace CopyAllToUSB
                     xs.Serialize(wr, co);
                 }
 
-                MessageBox.Show("enregitrement des paramétres bien effectué \n\r" + "Source: " + co.strSourcePath + "\n\r" + "Destination: " + co.strDestinationPath);
+                //MessageBox.Show("Enregitrement des paramétres bien effectué \n\r" + "Source: " + co.strSourcePath + "\n\r" + "Destination: " + co.strDestinationPath);
 
             }
             catch (Exception e)
             {
 
-                MessageBox.Show("erreur lors de la sauvegarde des paramétres : {0}", e.StackTrace.ToString());
+                MessageBox.Show("Erreur lors de la sauvegarde des paramétres: " + e.StackTrace.ToString());
             }
 
         }
@@ -109,9 +101,6 @@ namespace CopyAllToUSB
             if (!string.IsNullOrWhiteSpace(fbd.SelectedPath))
             {
                 string[] files = Directory.GetFiles(fbd.SelectedPath);
-
-                //System.Windows.Forms.MessageBox.Show("Files found: " + files.Length.ToString(), "Message");
-                System.Windows.Forms.MessageBox.Show("Files found: " + files[0] + " " + fbd.SelectedPath.ToString(), "Message");
                 co.strSourcePath = fbd.SelectedPath.ToString();
                 txtBoxSourcePath.Text = co.strSourcePath;
                 this.creatXML();
@@ -126,24 +115,49 @@ namespace CopyAllToUSB
 
         private void lancerLaCopie()
         {
+            if (!verifierLaConfig())
+                return;
+
             try
             {
+                labelPathEnCours.Text = "";
 
                 foreach (string dirPath in Directory.GetDirectories(co.strSourcePath, "*", SearchOption.AllDirectories))
                     Directory.CreateDirectory(dirPath.Replace(co.strSourcePath, co.strDestinationPath));
 
-                //Copy all the files & Replaces any files with the same name
-                foreach (string newPath in Directory.GetFiles(co.strSourcePath, "*.*", SearchOption.AllDirectories)) { 
+                foreach (string newPath in Directory.GetFiles(co.strSourcePath, "*.*", SearchOption.AllDirectories))
+                {
+                    labelPathEnCours.Text = newPath.ToString();
+                    labelPathEnCours.Refresh();
                     File.Copy(newPath, newPath.Replace(co.strSourcePath, co.strDestinationPath), true);
-                    labelCopieEnCours.Text = newPath;
+
                 }
 
-                MessageBox.Show("la sauvegarde c'est bien terminée");
+                labelPathEnCours.Text = "Terminée";
+                //MessageBox.Show("la sauvegarde s'est bien terminée");
             }
             catch (Exception e)
             {
                 MessageBox.Show("Erreur lors de la copie: " + e.StackTrace.ToString());
             }
+        }
+
+        private bool verifierLaConfig()
+        {
+            if (string.IsNullOrEmpty(co.strDestinationPath))
+            {
+                MessageBox.Show("Veuillez choisir une destination");
+                return false;
+            }
+
+            if (string.IsNullOrEmpty(co.strSourcePath))
+            {
+                MessageBox.Show("Veuillez choisir une source");
+                return false;
+
+            }
+
+            return true;
         }
 
         private void buttonDestination_Click(object sender, EventArgs e)
@@ -155,9 +169,6 @@ namespace CopyAllToUSB
             if (!string.IsNullOrWhiteSpace(fbd.SelectedPath))
             {
                 string[] files = Directory.GetFiles(fbd.SelectedPath);
-
-                //System.Windows.Forms.MessageBox.Show("Files found: " + files.Length.ToString(), "Message");
-               // System.Windows.Forms.MessageBox.Show("Files found: " + files[0] + " " + fbd.SelectedPath.ToString(), "Message");
                 co.strDestinationPath = fbd.SelectedPath.ToString();
                 this.txtBoxDestinationPath.Text = co.strDestinationPath;
                 this.creatXML();
@@ -165,6 +176,11 @@ namespace CopyAllToUSB
         }
 
         private void buttonSauveConfig_Click(object sender, EventArgs e)
+        {
+            this.creatXML();
+        }
+
+        private void txtBoxSourcePath_TextChanged(object sender, EventArgs e)
         {
             this.creatXML();
         }
