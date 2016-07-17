@@ -54,7 +54,7 @@
             // 
             // buttonExecuter
             // 
-            this.buttonExecuter.Location = new System.Drawing.Point(12, 119);
+            this.buttonExecuter.Location = new System.Drawing.Point(55, 111);
             this.buttonExecuter.Name = "buttonExecuter";
             this.buttonExecuter.Size = new System.Drawing.Size(57, 44);
             this.buttonExecuter.TabIndex = 2;
@@ -118,6 +118,7 @@
             this.txtBoxDestinationPath.Name = "txtBoxDestinationPath";
             this.txtBoxDestinationPath.Size = new System.Drawing.Size(340, 20);
             this.txtBoxDestinationPath.TabIndex = 1;
+            this.txtBoxDestinationPath.TextChanged += new System.EventHandler(this.txtBoxDestinationPath_TextChanged);
             // 
             // labelPathEnCours
             // 

@@ -33,8 +33,8 @@ namespace CopyAllToUSB
 
             }
 
-            // si aplli est ouverte avec param == hide on cache la feneter et on lance la copie
-            if (args[0] == "hide")
+            // si aplli est ouverte avec param == /hide on cache la feneter et on lance la copie
+            if (args[0] == "/hide")
             {
                 this.SetVisibleCore(false);
                 this.lancerLaCopie();
@@ -42,7 +42,7 @@ namespace CopyAllToUSB
 
         }
         /// <summary>
-        /// Pour cacher la fenetre si le parametre "hide" est passe en argument
+        /// Pour cacher la fenetre si le parametre "/hide" est passé en argument
         /// </summary>
         /// <param name="value"> true affcihe la fenetre</param>
         protected override void SetVisibleCore(bool value)
@@ -50,17 +50,6 @@ namespace CopyAllToUSB
             base.SetVisibleCore(value);
         }
 
-        //public void copyAll()
-        //{
-        //    //On copy déja toute l'arborescense
-        //    foreach (string dirPath in Directory.GetDirectories(co.strSourcePath, "*", SearchOption.AllDirectories))
-        //        Directory.CreateDirectory(dirPath.Replace(co.strSourcePath, co.strDestinationPath));
-
-        //    //On copie tout les fichiers
-        //    foreach (string newPath in Directory.GetFiles(co.strSourcePath, "*.*",
-        //        SearchOption.AllDirectories))
-        //        File.Copy(newPath, newPath.Replace(co.strSourcePath, co.strDestinationPath), true);
-        //}
 
         /// <summary>
         /// Pour sérialiser l'objet contenant strSourcePath et strDestinationPath dans le fichier XML config.xml 
@@ -68,9 +57,12 @@ namespace CopyAllToUSB
         private void creatXML()
         {
 
-            if (!verifierLaConfig())
+            if (!verifierSource())
                 return;
 
+            if (!verifierDest())
+                return;
+            
 
             try
             {
@@ -115,7 +107,7 @@ namespace CopyAllToUSB
 
         private void lancerLaCopie()
         {
-            if (!verifierLaConfig())
+            if (!verifierSource())
                 return;
 
             try
@@ -142,21 +134,26 @@ namespace CopyAllToUSB
             }
         }
 
-        private bool verifierLaConfig()
+        private bool verifierSource()
         {
-            if (string.IsNullOrEmpty(co.strDestinationPath))
+           
+            if (string.IsNullOrWhiteSpace(txtBoxSourcePath.Text))
+            {
+                MessageBox.Show("Veuillez choisir une source valide");
+                return false;
+
+            }
+
+            return true;
+        }
+
+        private bool verifierDest()
+        {
+            if (string.IsNullOrWhiteSpace(txtBoxDestinationPath.Text))
             {
                 MessageBox.Show("Veuillez choisir une destination");
                 return false;
             }
-
-            if (string.IsNullOrEmpty(co.strSourcePath))
-            {
-                MessageBox.Show("Veuillez choisir une source");
-                return false;
-
-            }
-
             return true;
         }
 
@@ -181,6 +178,11 @@ namespace CopyAllToUSB
         }
 
         private void txtBoxSourcePath_TextChanged(object sender, EventArgs e)
+        {
+            this.creatXML();
+        }
+
+        private void txtBoxDestinationPath_TextChanged(object sender, EventArgs e)
         {
             this.creatXML();
         }
