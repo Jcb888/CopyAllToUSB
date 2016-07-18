@@ -34,23 +34,27 @@ namespace CopyAllToUSB
             }
 
             // si aplli est ouverte avec param == /hide on cache la feneter et on lance la copie
-            if (args[0] == "/hide")
+            if (args.Length > 1)
             {
-                this.SetVisibleCore(false);
-                if (!this.verifierSource())
+                if (args[1] == "/hide")
                 {
-                    this.SetVisibleCore(true);
-                    return;
-                }
+                    this.SetVisibleCore(false);
+                    if (!this.verifierSource())
+                    {
+                        this.SetVisibleCore(true);
+                        return;
+                    }
 
-                if (!this.verifierDest())
-                {
-                    this.SetVisibleCore(true);
-                    return;
-                }
+                    if (!this.verifierDest())
+                    {
+                        this.SetVisibleCore(true);
+                        return;
+                    }
 
-                this.lancerLaCopie();
-                MessageBox.Show("la sauvegarde s'est bien terminée");
+                    this.lancerLaCopie();
+                    MessageBox.Show("la sauvegarde s'est bien terminée");
+                    this.Close();
+                }
             }
 
         }
@@ -79,6 +83,8 @@ namespace CopyAllToUSB
 
             try
             {
+                co.strSourcePath = this.txtBoxSourcePath.Text;
+                co.strDestinationPath = this.txtBoxDestinationPath.Text;
 
                 XmlSerializer xs = new XmlSerializer(typeof(configObject));
                 using (StreamWriter wr = new StreamWriter("config.xml"))
@@ -233,6 +239,7 @@ namespace CopyAllToUSB
 
             if(ret == DialogResult.Ignore)
             {
+               
                 this.creatXML();
             }
             if (ret == DialogResult.Cancel)
