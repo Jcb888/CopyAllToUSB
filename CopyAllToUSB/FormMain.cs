@@ -25,38 +25,49 @@ namespace CopyAllToUSB
             string[] args = Environment.GetCommandLineArgs();//pour récupérer les arguments de la ligne de commande
             labelPathEnCours.Text = "";
             XmlSerializer xs = new XmlSerializer(typeof(configObject));//pour serialiser en XML la config (sauvegarde des paths src et dst)
-            using (StreamReader rd = new StreamReader("config.xml"))
+            if (!File.Exists("config.xml"))
             {
-                co = xs.Deserialize(rd) as configObject;
-                this.txtBoxSourcePath.Text = co.strSourcePath;
-                this.txtBoxDestinationPath.Text = co.strDestinationPath;
-
-            }
-
-            // si aplli est ouverte avec param == /hide on cache la feneter et on lance la copie
-            if (args.Length > 1)
-            {
-                if (args[1] == "/hide")
+                co.strSourcePath = "";
+                co.strDestinationPath = "";
+                using (StreamWriter wr = new StreamWriter("config.xml"))
                 {
-                    this.SetVisibleCore(false);
-                    if (!this.verifierSource())
-                    {
-                        this.SetVisibleCore(true);
-                        return;
-                    }
-
-                    if (!this.verifierDest())
-                    {
-                        this.SetVisibleCore(true);
-                        return;
-                    }
-
-                    this.lancerLaCopie();
-                    MessageBox.Show("la sauvegarde s'est bien terminée");
-                    this.Close();
+                    xs.Serialize(wr, co);
                 }
-            }
 
+            }
+                
+                using (StreamReader rd = new StreamReader("config.xml"))
+                {
+                    co = xs.Deserialize(rd) as configObject;
+                    this.txtBoxSourcePath.Text = co.strSourcePath;
+                    this.txtBoxDestinationPath.Text = co.strDestinationPath;
+
+                }
+
+                // si aplli est ouverte avec param == /hide on cache la feneter et on lance la copie
+                if (args.Length > 1)
+                {
+                    if (args[1] == "/hide")
+                    {
+                        this.SetVisibleCore(false);
+                        if (!this.verifierSource())
+                        {
+                            this.SetVisibleCore(true);
+                            return;
+                        }
+
+                        if (!this.verifierDest())
+                        {
+                            this.SetVisibleCore(true);
+                            return;
+                        }
+
+                        this.lancerLaCopie();
+                        MessageBox.Show("la sauvegarde s'est bien terminée");
+                        this.Close();
+                    }
+                }
+            
         }
         /// <summary>
         /// Pour cacher la fenetre si le parametre "/hide" est passé en argument
@@ -136,13 +147,12 @@ namespace CopyAllToUSB
 
         private void lancerLaCopie()
         {
-            //if (!verifierSource())
-            //    return;
-
+            
             try
             {
                 labelPathEnCours.Text = "";
-
+                String strFichiersNonCopiés = "";
+                FileStream fs = null;
                 foreach (string dirPath in Directory.GetDirectories(txtBoxSourcePath.Text, "*", SearchOption.AllDirectories))
                     Directory.CreateDirectory(dirPath.Replace(txtBoxSourcePath.Text, txtBoxDestinationPath.Text));
 
@@ -150,12 +160,23 @@ namespace CopyAllToUSB
                 {
                     labelPathEnCours.Text = newPath.ToString();
                     labelPathEnCours.Refresh();
-                    File.Copy(newPath, newPath.Replace(txtBoxSourcePath.Text, txtBoxDestinationPath.Text), true);
+                    if (this.TryExclusiveOpen(newPath,out fs))
+                    {
+                        File.Copy(newPath, newPath.Replace(txtBoxSourcePath.Text, txtBoxDestinationPath.Text), true);
+                        //System.Diagnostics.Debug.WriteLine("ok");
 
+                    }
+                    else
+                    {
+                        if(strFichiersNonCopiés.Length < 5000)
+                                strFichiersNonCopiés += newPath;
+                    }
                 }
 
+
                 labelPathEnCours.Text = "Terminée";
-                //MessageBox.Show("la sauvegarde s'est bien terminée");
+                MessageBox.Show("Ces fichiers n'ont pas put etre copiés:\n\r " + strFichiersNonCopiés + strFichiersNonCopiés.Length);
+                //
             }
             catch (Exception e)
             {
@@ -166,12 +187,7 @@ namespace CopyAllToUSB
         private bool verifierSource()
         {
            
-            //if (string.IsNullOrWhiteSpace(txtBoxSourcePath.Text))
-            //{
-            //    MessageBox.Show("Veuillez choisir une source valide");
-            //    return false;
-
-            //}
+           
 
             if (!Directory.Exists(txtBoxSourcePath.Text))
             {
@@ -196,6 +212,21 @@ namespace CopyAllToUSB
                 return false;
             }
             return true;
+        }
+
+        private bool TryExclusiveOpen(string filePath, out FileStream fs)
+        {
+            try
+            {
+                fs = File.Open(filePath, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+                fs.Close();
+                return true;
+            }
+            catch
+            {
+                fs = null;
+                return false;
+            }
         }
 
         private void buttonDestination_Click(object sender, EventArgs e)
