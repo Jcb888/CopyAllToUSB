@@ -37,7 +37,20 @@ namespace CopyAllToUSB
             if (args[0] == "/hide")
             {
                 this.SetVisibleCore(false);
+                if (!this.verifierSource())
+                {
+                    this.SetVisibleCore(true);
+                    return;
+                }
+
+                if (!this.verifierDest())
+                {
+                    this.SetVisibleCore(true);
+                    return;
+                }
+
                 this.lancerLaCopie();
+                MessageBox.Show("la sauvegarde s'est bien terminée");
             }
 
         }
@@ -93,35 +106,45 @@ namespace CopyAllToUSB
             if (!string.IsNullOrWhiteSpace(fbd.SelectedPath))
             {
                 string[] files = Directory.GetFiles(fbd.SelectedPath);
-                co.strSourcePath = fbd.SelectedPath.ToString();
-                txtBoxSourcePath.Text = co.strSourcePath;
-                this.creatXML();
+                //co.strSourcePath = fbd.SelectedPath.ToString();
+                //txtBoxSourcePath.Text = co.strSourcePath;
+                txtBoxSourcePath.Text = fbd.SelectedPath.ToString();
+                //this.creatXML();
             }
         }
 
         private void buttonExecuter_Click(object sender, EventArgs e)
         {
-            lancerLaCopie();
+            if (!this.verifierSource())
+            {
+                return;
+            }
+
+            if (!this.verifierDest())
+            {
+                return;
+            }
+            this.lancerLaCopie();
 
         }
 
         private void lancerLaCopie()
         {
-            if (!verifierSource())
-                return;
+            //if (!verifierSource())
+            //    return;
 
             try
             {
                 labelPathEnCours.Text = "";
 
-                foreach (string dirPath in Directory.GetDirectories(co.strSourcePath, "*", SearchOption.AllDirectories))
-                    Directory.CreateDirectory(dirPath.Replace(co.strSourcePath, co.strDestinationPath));
+                foreach (string dirPath in Directory.GetDirectories(txtBoxSourcePath.Text, "*", SearchOption.AllDirectories))
+                    Directory.CreateDirectory(dirPath.Replace(txtBoxSourcePath.Text, txtBoxDestinationPath.Text));
 
-                foreach (string newPath in Directory.GetFiles(co.strSourcePath, "*.*", SearchOption.AllDirectories))
+                foreach (string newPath in Directory.GetFiles(txtBoxSourcePath.Text, "*.*", SearchOption.AllDirectories))
                 {
                     labelPathEnCours.Text = newPath.ToString();
                     labelPathEnCours.Refresh();
-                    File.Copy(newPath, newPath.Replace(co.strSourcePath, co.strDestinationPath), true);
+                    File.Copy(newPath, newPath.Replace(txtBoxSourcePath.Text, txtBoxDestinationPath.Text), true);
 
                 }
 
@@ -137,11 +160,17 @@ namespace CopyAllToUSB
         private bool verifierSource()
         {
            
-            if (string.IsNullOrWhiteSpace(txtBoxSourcePath.Text))
-            {
-                MessageBox.Show("Veuillez choisir une source valide");
-                return false;
+            //if (string.IsNullOrWhiteSpace(txtBoxSourcePath.Text))
+            //{
+            //    MessageBox.Show("Veuillez choisir une source valide");
+            //    return false;
 
+            //}
+
+            if (!Directory.Exists(txtBoxSourcePath.Text))
+            {
+                MessageBox.Show("Le repertoire source n'existe pas");
+                return false;
             }
 
             return true;
@@ -149,9 +178,15 @@ namespace CopyAllToUSB
 
         private bool verifierDest()
         {
-            if (string.IsNullOrWhiteSpace(txtBoxDestinationPath.Text))
+            //if (string.IsNullOrWhiteSpace(txtBoxDestinationPath.Text))
+            //{
+            //    MessageBox.Show("Veuillez choisir une destination");
+            //    return false;
+            //}
+
+            if (!Directory.Exists(txtBoxDestinationPath.Text))
             {
-                MessageBox.Show("Veuillez choisir une destination");
+                MessageBox.Show("Le repertoire destination n'existe pas");
                 return false;
             }
             return true;
@@ -174,17 +209,37 @@ namespace CopyAllToUSB
 
         private void buttonSauveConfig_Click(object sender, EventArgs e)
         {
-            this.creatXML();
+            //this.creatXML();
         }
 
         private void txtBoxSourcePath_TextChanged(object sender, EventArgs e)
         {
-            this.creatXML();
+            //this.creatXML();
         }
 
         private void txtBoxDestinationPath_TextChanged(object sender, EventArgs e)
         {
-            this.creatXML();
+            //this.creatXML();
+        }
+
+        private void FormMain_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            DialogResult ret = DialogResult.Ignore;
+                
+            if (!this.verifierSource())
+               ret = MessageBox.Show("Le repertoire source n'existe pas voulez vous quitter et abandonner les modifications (OK) ou modifier(Cancel) ", "Attention", MessageBoxButtons.OKCancel, MessageBoxIcon.Stop);
+            if(!this.verifierDest())
+                ret = MessageBox.Show("Le repertoire destination n'existe pas voulez vous quitter et abandonner les modifications (OK) ou modifier(Annuler) ", "Attention", MessageBoxButtons.OKCancel, MessageBoxIcon.Stop);
+
+            if(ret == DialogResult.Ignore)
+            {
+                this.creatXML();
+            }
+            if (ret == DialogResult.Cancel)
+            {
+                e.Cancel = true;
+            }
+            
         }
     }
 
