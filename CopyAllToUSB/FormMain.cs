@@ -63,14 +63,15 @@ namespace CopyAllToUSB
                         }
 
                         this.lancerLaCopie();
-                        MessageBox.Show("la sauvegarde s'est bien terminée");
+                        MessageBox.Show("Sauvegarde terminée");
                         this.Close();
                     }
                 }
             
         }
+
         /// <summary>
-        /// Pour cacher la fenetre si le parametre "/hide" est passé en argument
+        /// Réécriture de setvisible core pour cacher la fenetre si le parametre "/hide" est passé en argument
         /// </summary>
         /// <param name="value"> true affcihe la fenetre</param>
         protected override void SetVisibleCore(bool value)
@@ -78,9 +79,8 @@ namespace CopyAllToUSB
             base.SetVisibleCore(value);
         }
 
-
         /// <summary>
-        /// Pour sérialiser l'objet contenant strSourcePath et strDestinationPath dans le fichier XML config.xml 
+        /// Pour sérialiser l'objet contenant strSourcePath et strDestinationPath dans le fichier config.xml 
         /// </summary>
         private void creatXML()
         {
@@ -145,6 +145,9 @@ namespace CopyAllToUSB
 
         }
 
+        /// <summary>
+        /// Copie tous les fichiers et dossiers en dessous de src vers dest 
+        /// </summary>
         private void lancerLaCopie()
         {
             
@@ -168,15 +171,15 @@ namespace CopyAllToUSB
                     }
                     else
                     {
-                        if(strFichiersNonCopiés.Length < 5000)
+                        if(strFichiersNonCopiés.Length < 5000)//reduction volontaire de la fenetre à 5000 car. affichés
                                 strFichiersNonCopiés += newPath;
                     }
                 }
 
 
                 labelPathEnCours.Text = "Terminée";
-                MessageBox.Show("Ces fichiers n'ont pas put etre copiés:\n\r " + strFichiersNonCopiés + strFichiersNonCopiés.Length);
-                //
+                MessageBox.Show("Ces fichiers n'ont pas put etre copiés:\n\r " + strFichiersNonCopiés);
+               
             }
             catch (Exception e)
             {
@@ -186,8 +189,6 @@ namespace CopyAllToUSB
 
         private bool verifierSource()
         {
-           
-           
 
             if (!Directory.Exists(txtBoxSourcePath.Text))
             {
@@ -200,11 +201,6 @@ namespace CopyAllToUSB
 
         private bool verifierDest()
         {
-            //if (string.IsNullOrWhiteSpace(txtBoxDestinationPath.Text))
-            //{
-            //    MessageBox.Show("Veuillez choisir une destination");
-            //    return false;
-            //}
 
             if (!Directory.Exists(txtBoxDestinationPath.Text))
             {
@@ -214,6 +210,12 @@ namespace CopyAllToUSB
             return true;
         }
 
+        /// <summary>
+        /// Rnvoit true si le fichier passé en param peut etre ouvert 
+        /// </summary>
+        /// <param name="filePath"> le chemin vers le fichier à tester</param>
+        /// <param name="fs">non utilisé pour l'instant</param>
+        /// <returns></returns>
         private bool TryExclusiveOpen(string filePath, out FileStream fs)
         {
             try
@@ -264,7 +266,7 @@ namespace CopyAllToUSB
             DialogResult ret = DialogResult.Ignore;
                 
             if (!this.verifierSource())
-               ret = MessageBox.Show("Le repertoire source n'existe pas voulez vous quitter et abandonner les modifications (OK) ou modifier(Cancel) ", "Attention", MessageBoxButtons.OKCancel, MessageBoxIcon.Stop);
+               ret = MessageBox.Show("Le repertoire source n'existe pas voulez vous quitter et abandonner les modifications (OK) ou modifier(Annuler) ", "Attention", MessageBoxButtons.OKCancel, MessageBoxIcon.Stop);
             if(!this.verifierDest())
                 ret = MessageBox.Show("Le repertoire destination n'existe pas voulez vous quitter et abandonner les modifications (OK) ou modifier(Annuler) ", "Attention", MessageBoxButtons.OKCancel, MessageBoxIcon.Stop);
 
@@ -281,6 +283,7 @@ namespace CopyAllToUSB
         }
     }
 
+    //Objet pour conserver les params et serialisable en XML
     public class configObject
     {
         public String strSourcePath { get; set; }
