@@ -50,7 +50,6 @@
             this.txtBoxSourcePath.Name = "txtBoxSourcePath";
             this.txtBoxSourcePath.Size = new System.Drawing.Size(340, 20);
             this.txtBoxSourcePath.TabIndex = 0;
-            this.txtBoxSourcePath.TextChanged += new System.EventHandler(this.txtBoxSourcePath_TextChanged);
             // 
             // buttonExecuter
             // 
@@ -118,7 +117,6 @@
             this.txtBoxDestinationPath.Name = "txtBoxDestinationPath";
             this.txtBoxDestinationPath.Size = new System.Drawing.Size(340, 20);
             this.txtBoxDestinationPath.TabIndex = 1;
-            this.txtBoxDestinationPath.TextChanged += new System.EventHandler(this.txtBoxDestinationPath_TextChanged);
             // 
             // labelPathEnCours
             // 

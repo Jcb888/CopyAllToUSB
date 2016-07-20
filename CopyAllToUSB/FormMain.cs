@@ -14,7 +14,6 @@ using System.Xml.Serialization;
 namespace CopyAllToUSB
 {
 
-
     public partial class FormMain : Form
     {
         configObject co = new configObject();
@@ -23,51 +22,52 @@ namespace CopyAllToUSB
         {
             InitializeComponent();
             string[] args = Environment.GetCommandLineArgs();//pour récupérer les arguments de la ligne de commande
-            labelPathEnCours.Text = "";
+            labelPathEnCours.Text = ""; //init
             XmlSerializer xs = new XmlSerializer(typeof(configObject));//pour serialiser en XML la config (sauvegarde des paths src et dst)
-            if (!File.Exists("config.xml"))
+            if (!File.Exists(AppDomain.CurrentDomain.BaseDirectory.ToString() + "config.xml"))//si le fichier n'existe pas on le cré avec init à "";
             {
                 co.strSourcePath = "";
                 co.strDestinationPath = "";
-                using (StreamWriter wr = new StreamWriter("config.xml"))
+                using (StreamWriter wr = new StreamWriter(AppDomain.CurrentDomain.BaseDirectory.ToString() + "config.xml"))
                 {
                     xs.Serialize(wr, co);
                 }
 
             }
-                
-                using (StreamReader rd = new StreamReader("config.xml"))
-                {
-                    co = xs.Deserialize(rd) as configObject;
-                    this.txtBoxSourcePath.Text = co.strSourcePath;
-                    this.txtBoxDestinationPath.Text = co.strDestinationPath;
 
-                }
+            //init des txtbox avec les params enregistres dans le xml
+            using (StreamReader rd = new StreamReader(AppDomain.CurrentDomain.BaseDirectory.ToString() + "config.xml"))
+            {
+                co = xs.Deserialize(rd) as configObject;
+                this.txtBoxSourcePath.Text = co.strSourcePath;
+                this.txtBoxDestinationPath.Text = co.strDestinationPath;
 
-                // si aplli est ouverte avec param == /hide on cache la feneter et on lance la copie
-                if (args.Length > 1)
+            }
+
+            // si l'aplli est ouverte avec param == /hide on cache la fenetre et on lance la copie
+            if (args.Length > 1)
+            {
+                if (args[1] == "/hide")
                 {
-                    if (args[1] == "/hide")
+                    this.SetVisibleCore(false);
+                    if (!this.verifierSource())
                     {
-                        this.SetVisibleCore(false);
-                        if (!this.verifierSource())
-                        {
-                            this.SetVisibleCore(true);
-                            return;
-                        }
-
-                        if (!this.verifierDest())
-                        {
-                            this.SetVisibleCore(true);
-                            return;
-                        }
-
-                        this.lancerLaCopie();
-                        MessageBox.Show("Sauvegarde terminée");
-                        this.Close();
+                        this.SetVisibleCore(true);
+                        return;
                     }
+
+                    if (!this.verifierDest())
+                    {
+                        this.SetVisibleCore(true);
+                        return;
+                    }
+
+                    this.lancerLaCopie();
+                    MessageBox.Show(new Form { TopMost = true }, "Sauvegarde terminée");
+                    this.Close();
                 }
-            
+            }
+
         }
 
         /// <summary>
@@ -90,7 +90,7 @@ namespace CopyAllToUSB
 
             if (!verifierDest())
                 return;
-            
+
 
             try
             {
@@ -98,7 +98,7 @@ namespace CopyAllToUSB
                 co.strDestinationPath = this.txtBoxDestinationPath.Text;
 
                 XmlSerializer xs = new XmlSerializer(typeof(configObject));
-                using (StreamWriter wr = new StreamWriter("config.xml"))
+                using (StreamWriter wr = new StreamWriter(AppDomain.CurrentDomain.BaseDirectory.ToString() + "config.xml"))
                 {
                     xs.Serialize(wr, co);
                 }
@@ -141,8 +141,8 @@ namespace CopyAllToUSB
             {
                 return;
             }
-            this.lancerLaCopie();
 
+            this.lancerLaCopie();
         }
 
         /// <summary>
@@ -150,36 +150,35 @@ namespace CopyAllToUSB
         /// </summary>
         private void lancerLaCopie()
         {
-            
+
             try
             {
-                labelPathEnCours.Text = "";
+                labelPathEnCours.Text = "";//reinit
                 String strFichiersNonCopiés = "";
                 FileStream fs = null;
+                //pour créer l'arborescense
                 foreach (string dirPath in Directory.GetDirectories(txtBoxSourcePath.Text, "*", SearchOption.AllDirectories))
                     Directory.CreateDirectory(dirPath.Replace(txtBoxSourcePath.Text, txtBoxDestinationPath.Text));
-
+                //pour copier les fichiers
                 foreach (string newPath in Directory.GetFiles(txtBoxSourcePath.Text, "*.*", SearchOption.AllDirectories))
                 {
                     labelPathEnCours.Text = newPath.ToString();
                     labelPathEnCours.Refresh();
-                    if (this.TryExclusiveOpen(newPath,out fs))
+                    if (this.TryExclusiveOpen(newPath, out fs))
                     {
                         File.Copy(newPath, newPath.Replace(txtBoxSourcePath.Text, txtBoxDestinationPath.Text), true);
-                        //System.Diagnostics.Debug.WriteLine("ok");
-
+                        
                     }
                     else
                     {
-                        if(strFichiersNonCopiés.Length < 5000)//reduction volontaire de la fenetre à 5000 car. affichés
-                                strFichiersNonCopiés += newPath;
+                        if (strFichiersNonCopiés.Length < 5000)//reduction volontaire de la fenetre à 5000 car. affichés
+                            strFichiersNonCopiés += newPath;
                     }
                 }
 
-
                 labelPathEnCours.Text = "Terminée";
-                MessageBox.Show("Ces fichiers n'ont pas put etre copiés:\n\r " + strFichiersNonCopiés);
-               
+                if(strFichiersNonCopiés.Length > 1)
+                MessageBox.Show(new Form { TopMost = true }, "Ces fichiers n'ont pas pu etre copiés (accès refusé) :\n\r " + strFichiersNonCopiés); //pour avoir la fenetre au premier plans qd option "/hide"
             }
             catch (Exception e)
             {
@@ -187,6 +186,7 @@ namespace CopyAllToUSB
             }
         }
 
+        //return true si le path source existe false sinon
         private bool verifierSource()
         {
 
@@ -199,6 +199,7 @@ namespace CopyAllToUSB
             return true;
         }
 
+        //return true si le path destination existe false sinon
         private bool verifierDest()
         {
 
@@ -246,50 +247,35 @@ namespace CopyAllToUSB
             }
         }
 
-        private void buttonSauveConfig_Click(object sender, EventArgs e)
-        {
-            //this.creatXML();
-        }
-
-        private void txtBoxSourcePath_TextChanged(object sender, EventArgs e)
-        {
-            //this.creatXML();
-        }
-
-        private void txtBoxDestinationPath_TextChanged(object sender, EventArgs e)
-        {
-            //this.creatXML();
-        }
-
+        //avant de sortir on verifie les params à enregistrer et on laisse l'utilisateur choisir
         private void FormMain_FormClosing(object sender, FormClosingEventArgs e)
         {
             DialogResult ret = DialogResult.Ignore;
-                
+
             if (!this.verifierSource())
-               ret = MessageBox.Show("Le repertoire source n'existe pas voulez vous quitter et abandonner les modifications (OK) ou modifier(Annuler) ", "Attention", MessageBoxButtons.OKCancel, MessageBoxIcon.Stop);
-            if(!this.verifierDest())
+                ret = MessageBox.Show("Le repertoire source n'existe pas voulez vous quitter et abandonner les modifications (OK) ou modifier(Annuler) ", "Attention", MessageBoxButtons.OKCancel, MessageBoxIcon.Stop);
+            if (!this.verifierDest())
                 ret = MessageBox.Show("Le repertoire destination n'existe pas voulez vous quitter et abandonner les modifications (OK) ou modifier(Annuler) ", "Attention", MessageBoxButtons.OKCancel, MessageBoxIcon.Stop);
 
-            if(ret == DialogResult.Ignore)
+            if (ret == DialogResult.Ignore)
             {
-               
+
                 this.creatXML();
             }
             if (ret == DialogResult.Cancel)
             {
                 e.Cancel = true;
             }
-            
         }
     }
 
-    //Objet pour conserver les params et serialisable en XML
+    /// <summary>
+    /// Objet pour conserver les params et serialisable en XML
+    /// </summary>
     public class configObject
     {
         public String strSourcePath { get; set; }
         public String strDestinationPath { get; set; }
 
     }
-
-
 }
