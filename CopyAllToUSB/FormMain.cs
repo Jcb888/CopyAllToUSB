@@ -164,14 +164,15 @@ namespace CopyAllToUSB
                 {
                     labelPathEnCours.Text = newPath.ToString();
                     labelPathEnCours.Refresh();
-                    if (this.TryExclusiveOpen(newPath, out fs))
+                    if (this.TryOpen(newPath, out fs))//On test d'abord si l'ouverture est possible
                     {
-                        File.Copy(newPath, newPath.Replace(txtBoxSourcePath.Text, txtBoxDestinationPath.Text), true);
-                        
+                        //File.Copy(newPath, newPath.Replace(txtBoxSourcePath.Text, txtBoxDestinationPath.Text), true);
+                        //fs.CopyTo()
+                        progressBar.Maximum = 
                     }
-                    else
+                    else//si l'ouverture n'est pas possible
                     {
-                        if (strFichiersNonCopiés.Length < 5000)//reduction volontaire de la fenetre à 5000 car. affichés
+                        if (strFichiersNonCopiés.Length < 5000)//reduction volontaire de l'affichage à 5000 car. affichés
                             strFichiersNonCopiés += newPath;
                     }
                 }
@@ -217,11 +218,12 @@ namespace CopyAllToUSB
         /// <param name="filePath"> le chemin vers le fichier à tester</param>
         /// <param name="fs">non utilisé pour l'instant</param>
         /// <returns></returns>
-        private bool TryExclusiveOpen(string filePath, out FileStream fs)
+        private bool TryOpen(string filePath, out FileStream fs)
         {
             try
             {
-                fs = File.Open(filePath, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+                //fs = File.Open(filePath, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+                fs = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
                 fs.Close();
                 return true;
             }

@@ -41,6 +41,7 @@
             this.labelDestination = new System.Windows.Forms.Label();
             this.txtBoxDestinationPath = new System.Windows.Forms.TextBox();
             this.labelPathEnCours = new System.Windows.Forms.Label();
+            this.progressBar = new System.Windows.Forms.ProgressBar();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -53,7 +54,7 @@
             // 
             // buttonExecuter
             // 
-            this.buttonExecuter.Location = new System.Drawing.Point(55, 111);
+            this.buttonExecuter.Location = new System.Drawing.Point(55, 153);
             this.buttonExecuter.Name = "buttonExecuter";
             this.buttonExecuter.Size = new System.Drawing.Size(57, 44);
             this.buttonExecuter.TabIndex = 2;
@@ -87,7 +88,7 @@
             // pictureBox1
             // 
             this.pictureBox1.Image = global::CopyAllToUSB.Properties.Resources.logo;
-            this.pictureBox1.Location = new System.Drawing.Point(177, 119);
+            this.pictureBox1.Location = new System.Drawing.Point(177, 161);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(175, 29);
             this.pictureBox1.TabIndex = 6;
@@ -127,11 +128,19 @@
             this.labelPathEnCours.TabIndex = 10;
             this.labelPathEnCours.Text = "label1";
             // 
+            // progressBar
+            // 
+            this.progressBar.Location = new System.Drawing.Point(13, 105);
+            this.progressBar.Name = "progressBar";
+            this.progressBar.Size = new System.Drawing.Size(339, 21);
+            this.progressBar.TabIndex = 11;
+            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(410, 183);
+            this.ClientSize = new System.Drawing.Size(410, 219);
+            this.Controls.Add(this.progressBar);
             this.Controls.Add(this.labelPathEnCours);
             this.Controls.Add(this.labelDestination);
             this.Controls.Add(this.labelSource);
@@ -164,6 +173,7 @@
         private System.Windows.Forms.Label labelDestination;
         private System.Windows.Forms.TextBox txtBoxDestinationPath;
         private System.Windows.Forms.Label labelPathEnCours;
+        private System.Windows.Forms.ProgressBar progressBar;
     }
 }
 
