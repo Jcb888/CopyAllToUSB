@@ -71,7 +71,7 @@ namespace CopyAllToUSB
         }
 
         /// <summary>
-        /// Réécriture de setvisible core pour cacher la fenetre si le parametre "/hide" est passé en argument
+        /// Réécriture (sucharge) de setvisible core pour cacher la fenetre si le parametre "/hide" est passé en argument
         /// </summary>
         /// <param name="value"> true affcihe la fenetre</param>
         protected override void SetVisibleCore(bool value)
@@ -155,7 +155,6 @@ namespace CopyAllToUSB
             {
                 labelPathEnCours.Text = "";//reinit
                 String strFichiersNonCopiés = "";
-                FileStream fs = null;
                 //pour créer l'arborescense
                 foreach (string dirPath in Directory.GetDirectories(txtBoxSourcePath.Text, "*", SearchOption.AllDirectories))
                     Directory.CreateDirectory(dirPath.Replace(txtBoxSourcePath.Text, txtBoxDestinationPath.Text));
@@ -164,7 +163,7 @@ namespace CopyAllToUSB
                 {
                     labelPathEnCours.Text = newPath.ToString();
                     labelPathEnCours.Refresh();
-                    if (this.TryExclusiveOpen(newPath, out fs))
+                    if (this.TryOpen(newPath))
                     {
                         File.Copy(newPath, newPath.Replace(txtBoxSourcePath.Text, txtBoxDestinationPath.Text), true);
                         
@@ -212,13 +211,13 @@ namespace CopyAllToUSB
         }
 
         /// <summary>
-        /// Rnvoit true si le fichier passé en param peut etre ouvert 
+        /// Renvoit true si le fichier passé en param peut etre ouvert 
         /// </summary>
-        /// <param name="filePath"> le chemin vers le fichier à tester</param>
-        /// <param name="fs">non utilisé pour l'instant</param>
-        /// <returns></returns>
-        private bool TryExclusiveOpen(string filePath, out FileStream fs)
+        /// <param name="filePath"> le chemin vers le fichier à tester (source)</param>
+        /// <returns> true si on peut ouvrir le fichier</returns>
+        private bool TryOpen(string filePath)
         {
+            FileStream fs = null;
             try
             {
                 fs = File.Open(filePath, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
