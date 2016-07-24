@@ -166,9 +166,10 @@ namespace CopyAllToUSB
                     labelPathEnCours.Refresh();
                     if (this.TryOpen(newPath, out fs))//On test d'abord si l'ouverture est possible
                     {
-                        //File.Copy(newPath, newPath.Replace(txtBoxSourcePath.Text, txtBoxDestinationPath.Text), true);
+                        string dst = newPath.Replace(txtBoxSourcePath.Text, txtBoxDestinationPath.Text);
+                        File.Copy(newPath, newPath.Replace(txtBoxSourcePath.Text, txtBoxDestinationPath.Text), true);
                         //fs.CopyTo()
-                        progressBar.Maximum = 
+                        //progressBar.Maximum = 
                     }
                     else//si l'ouverture n'est pas possible
                     {
