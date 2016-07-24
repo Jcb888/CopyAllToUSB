@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml;
 using System.Xml.Serialization;
+using Microsoft.VisualBasic.FileIO;
 
 namespace CopyAllToUSB
 {
@@ -142,7 +143,7 @@ namespace CopyAllToUSB
                 return;
             }
 
-            this.lancerLaCopie();
+            this.lancerLaCopieAvecDialog();
         }
 
         /// <summary>
@@ -156,10 +157,10 @@ namespace CopyAllToUSB
                 labelPathEnCours.Text = "";//reinit
                 String strFichiersNonCopiés = "";
                 //pour créer l'arborescense
-                foreach (string dirPath in Directory.GetDirectories(txtBoxSourcePath.Text, "*", SearchOption.AllDirectories))
+                foreach (string dirPath in Directory.GetDirectories(txtBoxSourcePath.Text, "*", System.IO.SearchOption.AllDirectories))
                     Directory.CreateDirectory(dirPath.Replace(txtBoxSourcePath.Text, txtBoxDestinationPath.Text));
                 //pour copier les fichiers
-                foreach (string newPath in Directory.GetFiles(txtBoxSourcePath.Text, "*.*", SearchOption.AllDirectories))
+                foreach (string newPath in Directory.GetFiles(txtBoxSourcePath.Text, "*.*", System.IO.SearchOption.AllDirectories))
                 {
                     labelPathEnCours.Text = newPath.ToString();
                     labelPathEnCours.Refresh();
@@ -184,6 +185,24 @@ namespace CopyAllToUSB
                 MessageBox.Show("Erreur lors de la copie: " + e.StackTrace.ToString());
             }
         }
+
+        private void lancerLaCopieAvecDialog()
+        {
+            try
+            {
+                FileSystem.CopyDirectory(txtBoxSourcePath.Text, txtBoxDestinationPath.Text, UIOption.AllDialogs);
+            }
+
+            catch (System.OperationCanceledException oce)
+            {
+                MessageBox.Show("Opération annulé par l'utilisateur");
+            }
+            catch(Exception e)
+            {
+                MessageBox.Show("Erreur lors de la copie: " + e.StackTrace.ToString());
+            }
+        }
+            
 
         //return true si le path source existe false sinon
         private bool verifierSource()
