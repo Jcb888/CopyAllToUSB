@@ -23,13 +23,20 @@ namespace CopyAllToUSB
         {
             InitializeComponent();
             string[] args = Environment.GetCommandLineArgs();//pour récupérer les arguments de la ligne de commande
+            // On ne peut ecrire dans le repertoire AppDatas pas dans programme
+            string folder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            string specificFolder = Path.Combine(folder, "Arterris");
+            if (!Directory.Exists(specificFolder))
+                Directory.CreateDirectory(specificFolder);
+
+            //string strFilConfig = specificFolder + "\\config.xml";
             labelPathEnCours.Text = ""; //init
-            XmlSerializer xs = new XmlSerializer(typeof(configObject));//pour serialiser en XML la config (sauvegarde des paths src et dst)
-            if (!File.Exists(AppDomain.CurrentDomain.BaseDirectory.ToString() + "config.xml"))//si le fichier n'existe pas on le cré avec init à "";
+                        XmlSerializer xs = new XmlSerializer(typeof(configObject));//pour serialiser en XML la config (sauvegarde des paths src et dst)
+            if (!File.Exists(specificFolder + "\\config.xml"))//si le fichier n'existe pas on le cré avec init à "";
             {
                 co.strSourcePath = "";
                 co.strDestinationPath = "";
-                using (StreamWriter wr = new StreamWriter(AppDomain.CurrentDomain.BaseDirectory.ToString() + "config.xml"))
+                using (StreamWriter wr = new StreamWriter(specificFolder + "\\config.xml"))
                 {
                     xs.Serialize(wr, co);
                 }
@@ -37,7 +44,7 @@ namespace CopyAllToUSB
             }
 
             //init des txtbox avec les params enregistres dans le xml
-            using (StreamReader rd = new StreamReader(AppDomain.CurrentDomain.BaseDirectory.ToString() + "config.xml"))
+            using (StreamReader rd = new StreamReader(specificFolder + "\\config.xml"))
             {
                 co = xs.Deserialize(rd) as configObject;
                 this.txtBoxSourcePath.Text = co.strSourcePath;
@@ -64,7 +71,7 @@ namespace CopyAllToUSB
                     }
 
                     this.lancerLaCopie();
-                    MessageBox.Show(new Form { TopMost = true }, "Sauvegarde terminée");
+                    MessageBox.Show(new Form { TopMost = true }, "Sauvegarde terminée");//passage de la fenetre au premier plan.
                     this.Close();
                 }
             }
@@ -99,7 +106,7 @@ namespace CopyAllToUSB
                 co.strDestinationPath = this.txtBoxDestinationPath.Text;
 
                 XmlSerializer xs = new XmlSerializer(typeof(configObject));
-                using (StreamWriter wr = new StreamWriter(AppDomain.CurrentDomain.BaseDirectory.ToString() + "config.xml"))
+                using (StreamWriter wr = new StreamWriter(strFilConfig + "\\config.xml"))
                 {
                     xs.Serialize(wr, co);
                 }
@@ -147,7 +154,7 @@ namespace CopyAllToUSB
         }
 
         /// <summary>
-        /// Copie tous les fichiers et dossiers en dessous de src vers dest 
+        /// Copie tous les fichiers et dossiers en dessous de src vers dest sans demander confirmation et sans dialogue excepté le erreurs
         /// </summary>
         private void lancerLaCopie()
         {
