@@ -17,26 +17,29 @@ namespace CopyAllToUSB
 
     public partial class FormMain : Form
     {
+        // Les variables globals au formulaire
         configObject co = new configObject();
+        string appDataArterris = "";//c'est dans ce repertoire qu'on a les droits et qu'il convient d'écrire
+        string appdata = "";//son ss rep.
 
         public FormMain()
         {
             InitializeComponent();
             string[] args = Environment.GetCommandLineArgs();//pour récupérer les arguments de la ligne de commande
             // On ne peut ecrire dans le repertoire AppDatas pas dans programme
-            string folder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            string specificFolder = Path.Combine(folder, "Arterris");
-            if (!Directory.Exists(specificFolder))
-                Directory.CreateDirectory(specificFolder);
+            appdata = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            appDataArterris = Path.Combine(appdata, "Arterris");
+            if (!Directory.Exists(appDataArterris))
+                Directory.CreateDirectory(appDataArterris);
 
             //string strFilConfig = specificFolder + "\\config.xml";
             labelPathEnCours.Text = ""; //init
-                        XmlSerializer xs = new XmlSerializer(typeof(configObject));//pour serialiser en XML la config (sauvegarde des paths src et dst)
-            if (!File.Exists(specificFolder + "\\config.xml"))//si le fichier n'existe pas on le cré avec init à "";
+            XmlSerializer xs = new XmlSerializer(typeof(configObject));//pour serialiser en XML la config (sauvegarde des paths src et dst)
+            if (!File.Exists(appDataArterris + "\\config.xml"))//si le fichier n'existe pas on le cré avec init à "";
             {
                 co.strSourcePath = "";
                 co.strDestinationPath = "";
-                using (StreamWriter wr = new StreamWriter(specificFolder + "\\config.xml"))
+                using (StreamWriter wr = new StreamWriter(appDataArterris + "\\config.xml"))
                 {
                     xs.Serialize(wr, co);
                 }
@@ -44,7 +47,7 @@ namespace CopyAllToUSB
             }
 
             //init des txtbox avec les params enregistres dans le xml
-            using (StreamReader rd = new StreamReader(specificFolder + "\\config.xml"))
+            using (StreamReader rd = new StreamReader(appDataArterris + "\\config.xml"))
             {
                 co = xs.Deserialize(rd) as configObject;
                 this.txtBoxSourcePath.Text = co.strSourcePath;
@@ -52,7 +55,7 @@ namespace CopyAllToUSB
 
             }
 
-            // si l'aplli est ouverte avec param == /hide on cache la fenetre et on lance la copie
+            // si l'aplli est ouverte avec param == /hide on cache la fenetre et on lance la copie sans fenetre
             if (args.Length > 1)
             {
                 if (args[1] == "/hide")
@@ -88,10 +91,12 @@ namespace CopyAllToUSB
         }
 
         /// <summary>
-        /// Pour sérialiser l'objet contenant strSourcePath et strDestinationPath dans le fichier config.xml 
+        /// Pour sérialiser (parser) l'objet contenant strSourcePath et strDestinationPath dans le fichier config.xml 
         /// </summary>
-        private void creatXML()
+        public void creatXML()
         {
+            //string repAppData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            //string AppdataArterris = Path.Combine(repAppData, "Arterris");
 
             if (!verifierSource())
                 return;
@@ -106,7 +111,7 @@ namespace CopyAllToUSB
                 co.strDestinationPath = this.txtBoxDestinationPath.Text;
 
                 XmlSerializer xs = new XmlSerializer(typeof(configObject));
-                using (StreamWriter wr = new StreamWriter(strFilConfig + "\\config.xml"))
+                using (StreamWriter wr = new StreamWriter(appDataArterris + "\\config.xml"))
                 {
                     xs.Serialize(wr, co);
                 }
@@ -174,7 +179,7 @@ namespace CopyAllToUSB
                     if (this.TryOpen(newPath))
                     {
                         File.Copy(newPath, newPath.Replace(txtBoxSourcePath.Text, txtBoxDestinationPath.Text), true);
-                        
+
                     }
                     else
                     {
@@ -184,8 +189,8 @@ namespace CopyAllToUSB
                 }
 
                 labelPathEnCours.Text = "Terminée";
-                if(strFichiersNonCopiés.Length > 1)
-                MessageBox.Show(new Form { TopMost = true }, "Ces fichiers n'ont pas pu etre copiés (accès refusé) :\n\r " + strFichiersNonCopiés); //pour avoir la fenetre au premier plans qd option "/hide"
+                if (strFichiersNonCopiés.Length > 1)
+                    MessageBox.Show(new Form { TopMost = true }, "Ces fichiers n'ont pas pu etre copiés (accès refusé) :\n\r " + strFichiersNonCopiés); //pour avoir la fenetre au premier plans qd option "/hide"
             }
             catch (Exception e)
             {
@@ -202,14 +207,14 @@ namespace CopyAllToUSB
 
             catch (System.OperationCanceledException oce)
             {
-                MessageBox.Show("Opération annulé par l'utilisateur");
+                MessageBox.Show("Opération annulé par l'utilisateur " + oce.StackTrace);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 MessageBox.Show("Erreur lors de la copie: " + e.StackTrace.ToString());
             }
         }
-            
+
 
         //return true si le path source existe false sinon
         private bool verifierSource()
