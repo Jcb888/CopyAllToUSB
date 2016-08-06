@@ -122,7 +122,7 @@ namespace CopyAllToUSB
             catch (Exception e)
             {
 
-                MessageBox.Show("Erreur lors de la sauvegarde des paramétres: " + e.StackTrace.ToString());
+                MessageBox.Show("Erreur lors de la sauvegarde des paramètres: " + e.StackTrace.ToString());
             }
 
         }
@@ -207,7 +207,7 @@ namespace CopyAllToUSB
 
             catch (System.OperationCanceledException oce)
             {
-                MessageBox.Show("Opération annulé par l'utilisateur " + oce.StackTrace);
+                MessageBox.Show("Opération annulée par l'utilisateur " + oce.StackTrace);
             }
             catch (Exception e)
             {
@@ -222,7 +222,7 @@ namespace CopyAllToUSB
 
             if (!Directory.Exists(txtBoxSourcePath.Text))
             {
-                MessageBox.Show("Le repertoire source n'existe pas");
+                MessageBox.Show("Le répertoire source n'existe pas.");
                 return false;
             }
 
@@ -235,7 +235,7 @@ namespace CopyAllToUSB
 
             if (!Directory.Exists(txtBoxDestinationPath.Text))
             {
-                MessageBox.Show("Le repertoire destination n'existe pas");
+                MessageBox.Show("Le répertoire destination n'existe pas");
                 return false;
             }
             return true;
@@ -283,9 +283,9 @@ namespace CopyAllToUSB
             DialogResult ret = DialogResult.Ignore;
 
             if (!this.verifierSource())
-                ret = MessageBox.Show("Le repertoire source n'existe pas voulez vous quitter et abandonner les modifications (OK) ou modifier(Annuler) ", "Attention", MessageBoxButtons.OKCancel, MessageBoxIcon.Stop);
+                ret = MessageBox.Show("Le répertoire source n'existe pas voulez vous quitter et abandonner les modifications  (OK) ou modifier (Annuler). ", "Attention", MessageBoxButtons.OKCancel, MessageBoxIcon.Stop);
             if (!this.verifierDest())
-                ret = MessageBox.Show("Le repertoire destination n'existe pas voulez vous quitter et abandonner les modifications (OK) ou modifier(Annuler) ", "Attention", MessageBoxButtons.OKCancel, MessageBoxIcon.Stop);
+                ret = MessageBox.Show("Le répertoire destination n'existe pas voulez vous quitter et abandonner les modifications  (OK) ou modifier  (Annuler). ", "Attention", MessageBoxButtons.OKCancel, MessageBoxIcon.Stop);
 
             if (ret == DialogResult.Ignore)
             {
