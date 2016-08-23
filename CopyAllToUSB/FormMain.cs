@@ -190,7 +190,7 @@ namespace CopyAllToUSB
 
                 labelPathEnCours.Text = "Terminée";
                 if (strFichiersNonCopiés.Length > 1)
-                    MessageBox.Show(new Form { TopMost = true }, "Ces fichiers n'ont pas pu etre copiés (accès refusé) :\n\r " + strFichiersNonCopiés); //pour avoir la fenetre au premier plans qd option "/hide"
+                    MessageBox.Show(new Form { TopMost = true }, "Ces fichiers n'ont pas pu être copiés (accès refusé) :\n\r " + strFichiersNonCopiés); //pour avoir la fenetre au premier plans qd option "/hide"
             }
             catch (Exception e)
             {
@@ -198,7 +198,7 @@ namespace CopyAllToUSB
             }
         }
 
-        private void lancerLaCopieAvecDialog()
+        private void lancerLaCopieAvecDialog()// copie en mode avec fenetre
         {
             try
             {
@@ -207,12 +207,33 @@ namespace CopyAllToUSB
 
             catch (System.OperationCanceledException oce)
             {
-                MessageBox.Show("Opération annulée par l'utilisateur " + oce.StackTrace);
+                MessageBox.Show("Opération annulée par l'utilisateur " /*+ oce.StackTrace*/);
+            }
+            catch (PathTooLongException ptle)
+            {
+                MessageBox.Show("Le chemin vers le répertoir est trop long " /*+ ptle.StackTrace*/);
+            }
+            catch (DirectoryNotFoundException)
+            {
+                MessageBox.Show("Le chemin vers le répertoir n'existe pas " );
+            }
+            catch (ArgumentException)
+            {
+                MessageBox.Show("Il manque un chemin ");
+            }
+            catch (IOException)
+            {
+                MessageBox.Show("Erreur lecture écriture");
+            }
+            catch (UnauthorizedAccessException)
+            {
+                MessageBox.Show("Accés fichier refusé par le system");
             }
             catch (Exception e)
             {
                 MessageBox.Show("Erreur lors de la copie: " + e.StackTrace.ToString());
             }
+           
         }
 
 
