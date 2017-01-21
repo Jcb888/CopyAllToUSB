@@ -20,17 +20,18 @@ namespace CopyAllToUSB
         // Les variables globals au formulaire
         configObject co = new configObject();
         string appDataArterris = "";//c'est dans ce repertoire qu'on a les droits et qu'il convient d'écrire
-        string appdata = "";//son ss rep.
+        //string appdata = "";//son ss rep.
 
         public FormMain()
         {
             InitializeComponent();
             string[] args = Environment.GetCommandLineArgs();//pour récupérer les arguments de la ligne de commande
-            // On ne peut ecrire dans le repertoire AppDatas pas dans programme
-            appdata = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            appDataArterris = Path.Combine(appdata, "Arterris");
-            if (!Directory.Exists(appDataArterris))
-                Directory.CreateDirectory(appDataArterris);
+            // On peut ecrire dans le repertoire AppDatas pas dans programme
+            //appdata = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            //appDataArterris = Path.Combine(appdata, "Arterris");
+            appDataArterris = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+            //if (!Directory.Exists(appDataArterris))
+            //    Directory.CreateDirectory(appDataArterris);
 
             //string strFilConfig = specificFolder + "\\config.xml";
             labelPathEnCours.Text = ""; //init
@@ -39,6 +40,7 @@ namespace CopyAllToUSB
             {
                 co.strSourcePath = "";
                 co.strDestinationPath = "";
+                co.strFileSourcePath = "";
                 using (StreamWriter wr = new StreamWriter(appDataArterris + "\\config.xml"))
                 {
                     xs.Serialize(wr, co);
@@ -52,6 +54,7 @@ namespace CopyAllToUSB
                 co = xs.Deserialize(rd) as configObject;
                 this.txtBoxSourcePath.Text = co.strSourcePath;
                 this.txtBoxDestinationPath.Text = co.strDestinationPath;
+                this.textBoxFichierSource.Text = co.strFileSourcePath;
 
             }
 
@@ -109,6 +112,7 @@ namespace CopyAllToUSB
             {
                 co.strSourcePath = this.txtBoxSourcePath.Text;
                 co.strDestinationPath = this.txtBoxDestinationPath.Text;
+                co.strFileSourcePath = this.textBoxFichierSource.Text;
 
                 XmlSerializer xs = new XmlSerializer(typeof(configObject));
                 using (StreamWriter wr = new StreamWriter(appDataArterris + "\\config.xml"))
@@ -159,7 +163,7 @@ namespace CopyAllToUSB
         }
 
         /// <summary>
-        /// Copie tous les fichiers et dossiers en dessous de src vers dest sans demander confirmation et sans dialogue excepté le erreurs
+        /// Copie tous les fichiers et dossiers en dessous de src vers dest sans demander confirmation et sans dialogue excepté les erreurs
         /// </summary>
         private void lancerLaCopie()
         {
@@ -286,6 +290,7 @@ namespace CopyAllToUSB
         private void buttonDestination_Click(object sender, EventArgs e)
         {
             FolderBrowserDialog fbd = new FolderBrowserDialog();
+            fbd.SelectedPath = this.txtBoxDestinationPath.Text;
 
             DialogResult result = fbd.ShowDialog();
 
@@ -318,6 +323,77 @@ namespace CopyAllToUSB
                 e.Cancel = true;
             }
         }
+
+        private void buttonFichierSource_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openFileDialog1 = new OpenFileDialog();
+
+            // Set filter options and filter index.
+            openFileDialog1.Filter = "All Files (*.*)|*.*";
+            openFileDialog1.FilterIndex = 1;
+
+            openFileDialog1.Multiselect = false;
+
+            // Call the ShowDialog method to show the dialog box.
+            DialogResult result = openFileDialog1.ShowDialog();
+
+            // Process input if the user clicked OK.
+            if (result == DialogResult.OK)
+            {
+
+                if (!string.IsNullOrWhiteSpace(openFileDialog1.FileName))
+                {
+                    string file = openFileDialog1.FileName;
+                    //co.strSourcePath = fbd.SelectedPath.ToString();
+                    //txtBoxSourcePath.Text = co.strSourcePath;
+                    textBoxFichierSource.Text = openFileDialog1.FileName;
+                    //this.creatXML();
+                }
+            }
+
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            String destPath = txtBoxDestinationPath.Text + "\\" + Path.GetFileName(textBoxFichierSource.Text);
+
+            try
+            {
+                FileSystem.CopyFile(textBoxFichierSource.Text, destPath, UIOption.AllDialogs);
+            }
+
+            catch (System.OperationCanceledException /*oce*/)
+            {
+                MessageBox.Show("Opération annulée par l'utilisateur " /*+ oce.StackTrace*/);
+            }
+            catch (PathTooLongException /*ptle*/)
+            {
+                MessageBox.Show("Le chemin vers le répertoir est trop long " /*+ ptle.StackTrace*/);
+            }
+            catch (DirectoryNotFoundException)
+            {
+                MessageBox.Show("Le chemin vers le répertoir n'existe pas ");
+            }
+            catch (ArgumentException)
+            {
+                MessageBox.Show("Il manque un chemin ");
+            }
+            catch (IOException)
+            {
+                MessageBox.Show("Erreur lecture écriture");
+            }
+            catch (UnauthorizedAccessException)
+            {
+                MessageBox.Show("Accés fichier refusé par le system");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Erreur lors de la copie: " + ex.StackTrace.ToString());
+            }
+
+            MessageBox.Show("Fichier : " + Path.GetFileName(textBoxFichierSource.Text) +" copié", "OK", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+        }
     }
 
     /// <summary>
@@ -325,6 +401,7 @@ namespace CopyAllToUSB
     /// </summary>
     public class configObject
     {
+        public String strFileSourcePath { get; set; }
         public String strSourcePath { get; set; }
         public String strDestinationPath { get; set; }
 
