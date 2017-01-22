@@ -101,12 +101,14 @@ namespace CopyAllToUSB
             //string repAppData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             //string AppdataArterris = Path.Combine(repAppData, "Arterris");
 
-            if (!verifierSource())
-                return;
+            //if (!verifierSource())
+            //    return;
 
-            if (!verifierDest())
-                return;
+            //if (!verifierDest())
+            //    return;
 
+            if (co == null)//un min de verif qd mm
+                return;
 
             try
             {
@@ -149,10 +151,10 @@ namespace CopyAllToUSB
 
         private void buttonExecuter_Click(object sender, EventArgs e)
         {
-            if (!this.verifierSource())
-            {
-                return;
-            }
+        //    if (!this.verifierSource())
+        //    {
+        //        return;
+        //    }
 
             if (!this.verifierDest())
             {
@@ -306,22 +308,22 @@ namespace CopyAllToUSB
         //avant de sortir on verifie les params à enregistrer et on laisse l'utilisateur choisir
         private void FormMain_FormClosing(object sender, FormClosingEventArgs e)
         {
-            DialogResult ret = DialogResult.Ignore;
+            //DialogResult ret = DialogResult.Ignore;
 
-            if (!this.verifierSource())
-                ret = MessageBox.Show("Le répertoire source n'existe pas voulez vous quitter et abandonner les modifications  (OK) ou modifier (Annuler). ", "Attention", MessageBoxButtons.OKCancel, MessageBoxIcon.Stop);
-            if (!this.verifierDest())
-                ret = MessageBox.Show("Le répertoire destination n'existe pas voulez vous quitter et abandonner les modifications  (OK) ou modifier  (Annuler). ", "Attention", MessageBoxButtons.OKCancel, MessageBoxIcon.Stop);
+            //if (!this.verifierSource())
+            //    ret = MessageBox.Show("Le répertoire source n'existe pas voulez vous quitter et abandonner les modifications  (OK) ou modifier (Annuler). ", "Attention", MessageBoxButtons.OKCancel, MessageBoxIcon.Stop);
+            //if (!this.verifierDest())
+            //    ret = MessageBox.Show("Le répertoire destination n'existe pas voulez vous quitter et abandonner les modifications  (OK) ou modifier  (Annuler). ", "Attention", MessageBoxButtons.OKCancel, MessageBoxIcon.Stop);
 
-            if (ret == DialogResult.Ignore)
-            {
+            //if (ret == DialogResult.Ignore)
+            //{
 
                 this.creatXML();
-            }
-            if (ret == DialogResult.Cancel)
-            {
-                e.Cancel = true;
-            }
+            //}
+            //if (ret == DialogResult.Cancel)
+            //{
+            //    e.Cancel = true;
+            //}
         }
 
         private void buttonFichierSource_Click(object sender, EventArgs e)
