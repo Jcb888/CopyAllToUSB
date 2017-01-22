@@ -30,34 +30,26 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMain));
-            this.txtBoxSourcePath = new System.Windows.Forms.TextBox();
             this.buttonExecuter = new System.Windows.Forms.Button();
             this.buttonSource = new System.Windows.Forms.Button();
             this.buttonDestination = new System.Windows.Forms.Button();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.toolTip2 = new System.Windows.Forms.ToolTip(this.components);
+            this.button1 = new System.Windows.Forms.Button();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.labelSource = new System.Windows.Forms.Label();
             this.labelDestination = new System.Windows.Forms.Label();
-            this.txtBoxDestinationPath = new System.Windows.Forms.TextBox();
-            this.labelPathEnCours = new System.Windows.Forms.Label();
-            this.textBoxFichierSource = new System.Windows.Forms.TextBox();
             this.buttonFichierSource = new System.Windows.Forms.Button();
             this.labelFichierSource = new System.Windows.Forms.Label();
-            this.button1 = new System.Windows.Forms.Button();
+            this.comboBoxSourcePath = new System.Windows.Forms.ComboBox();
+            this.comboBoxDestination = new System.Windows.Forms.ComboBox();
+            this.comboBoxSourceFile = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
-            // txtBoxSourcePath
-            // 
-            this.txtBoxSourcePath.Location = new System.Drawing.Point(12, 69);
-            this.txtBoxSourcePath.Name = "txtBoxSourcePath";
-            this.txtBoxSourcePath.Size = new System.Drawing.Size(340, 20);
-            this.txtBoxSourcePath.TabIndex = 0;
-            // 
             // buttonExecuter
             // 
-            this.buttonExecuter.Location = new System.Drawing.Point(12, 172);
+            this.buttonExecuter.Location = new System.Drawing.Point(15, 150);
             this.buttonExecuter.Name = "buttonExecuter";
             this.buttonExecuter.Size = new System.Drawing.Size(73, 44);
             this.buttonExecuter.TabIndex = 2;
@@ -70,9 +62,9 @@
             // 
             this.buttonSource.FlatAppearance.BorderColor = System.Drawing.Color.White;
             this.buttonSource.FlatAppearance.BorderSize = 0;
-            this.buttonSource.Location = new System.Drawing.Point(358, 69);
+            this.buttonSource.Location = new System.Drawing.Point(358, 66);
             this.buttonSource.Name = "buttonSource";
-            this.buttonSource.Size = new System.Drawing.Size(40, 20);
+            this.buttonSource.Size = new System.Drawing.Size(40, 21);
             this.buttonSource.TabIndex = 3;
             this.buttonSource.Text = "...";
             this.buttonSource.UseVisualStyleBackColor = true;
@@ -80,18 +72,29 @@
             // 
             // buttonDestination
             // 
-            this.buttonDestination.Location = new System.Drawing.Point(358, 109);
+            this.buttonDestination.Location = new System.Drawing.Point(358, 108);
             this.buttonDestination.Name = "buttonDestination";
-            this.buttonDestination.Size = new System.Drawing.Size(40, 20);
+            this.buttonDestination.Size = new System.Drawing.Size(40, 21);
             this.buttonDestination.TabIndex = 4;
             this.buttonDestination.Text = "...";
             this.buttonDestination.UseVisualStyleBackColor = true;
             this.buttonDestination.Click += new System.EventHandler(this.buttonDestination_Click);
             // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(122, 150);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(65, 44);
+            this.button1.TabIndex = 14;
+            this.button1.Text = "Copie File";
+            this.toolTip2.SetToolTip(this.button1, "Executer une sauvegarde");
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
             // pictureBox1
             // 
             this.pictureBox1.Image = global::CopyAllToUSB.Properties.Resources.logo;
-            this.pictureBox1.Location = new System.Drawing.Point(223, 187);
+            this.pictureBox1.Location = new System.Drawing.Point(223, 165);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(175, 29);
             this.pictureBox1.TabIndex = 6;
@@ -115,36 +118,13 @@
             this.labelDestination.TabIndex = 9;
             this.labelDestination.Text = "Destination";
             // 
-            // txtBoxDestinationPath
-            // 
-            this.txtBoxDestinationPath.Location = new System.Drawing.Point(12, 109);
-            this.txtBoxDestinationPath.Name = "txtBoxDestinationPath";
-            this.txtBoxDestinationPath.Size = new System.Drawing.Size(340, 20);
-            this.txtBoxDestinationPath.TabIndex = 1;
-            // 
-            // labelPathEnCours
-            // 
-            this.labelPathEnCours.AutoSize = true;
-            this.labelPathEnCours.Location = new System.Drawing.Point(12, 136);
-            this.labelPathEnCours.Name = "labelPathEnCours";
-            this.labelPathEnCours.Size = new System.Drawing.Size(35, 13);
-            this.labelPathEnCours.TabIndex = 10;
-            this.labelPathEnCours.Text = "label1";
-            // 
-            // textBoxFichierSource
-            // 
-            this.textBoxFichierSource.Location = new System.Drawing.Point(15, 27);
-            this.textBoxFichierSource.Name = "textBoxFichierSource";
-            this.textBoxFichierSource.Size = new System.Drawing.Size(340, 20);
-            this.textBoxFichierSource.TabIndex = 11;
-            // 
             // buttonFichierSource
             // 
             this.buttonFichierSource.FlatAppearance.BorderColor = System.Drawing.Color.White;
             this.buttonFichierSource.FlatAppearance.BorderSize = 0;
-            this.buttonFichierSource.Location = new System.Drawing.Point(358, 27);
+            this.buttonFichierSource.Location = new System.Drawing.Point(358, 26);
             this.buttonFichierSource.Name = "buttonFichierSource";
-            this.buttonFichierSource.Size = new System.Drawing.Size(40, 20);
+            this.buttonFichierSource.Size = new System.Drawing.Size(40, 21);
             this.buttonFichierSource.TabIndex = 12;
             this.buttonFichierSource.Text = "...";
             this.buttonFichierSource.UseVisualStyleBackColor = true;
@@ -159,38 +139,50 @@
             this.labelFichierSource.TabIndex = 13;
             this.labelFichierSource.Text = "Fichier source";
             // 
-            // button1
+            // comboBoxSourcePath
             // 
-            this.button1.Location = new System.Drawing.Point(117, 172);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(65, 44);
-            this.button1.TabIndex = 14;
-            this.button1.Text = "Copie File";
-            this.toolTip2.SetToolTip(this.button1, "Executer une sauvegarde");
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.comboBoxSourcePath.FormattingEnabled = true;
+            this.comboBoxSourcePath.Location = new System.Drawing.Point(12, 66);
+            this.comboBoxSourcePath.Name = "comboBoxSourcePath";
+            this.comboBoxSourcePath.Size = new System.Drawing.Size(340, 21);
+            this.comboBoxSourcePath.TabIndex = 15;
+            // 
+            // comboBoxDestination
+            // 
+            this.comboBoxDestination.FormattingEnabled = true;
+            this.comboBoxDestination.Location = new System.Drawing.Point(12, 108);
+            this.comboBoxDestination.Name = "comboBoxDestination";
+            this.comboBoxDestination.Size = new System.Drawing.Size(340, 21);
+            this.comboBoxDestination.TabIndex = 16;
+            // 
+            // comboBoxSourceFile
+            // 
+            this.comboBoxSourceFile.FormattingEnabled = true;
+            this.comboBoxSourceFile.Location = new System.Drawing.Point(13, 26);
+            this.comboBoxSourceFile.Name = "comboBoxSourceFile";
+            this.comboBoxSourceFile.Size = new System.Drawing.Size(340, 21);
+            this.comboBoxSourceFile.TabIndex = 17;
             // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(410, 228);
+            this.ClientSize = new System.Drawing.Size(410, 214);
+            this.Controls.Add(this.comboBoxSourceFile);
+            this.Controls.Add(this.comboBoxDestination);
+            this.Controls.Add(this.comboBoxSourcePath);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.labelFichierSource);
             this.Controls.Add(this.buttonFichierSource);
-            this.Controls.Add(this.textBoxFichierSource);
-            this.Controls.Add(this.labelPathEnCours);
             this.Controls.Add(this.labelDestination);
             this.Controls.Add(this.labelSource);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.buttonDestination);
             this.Controls.Add(this.buttonSource);
             this.Controls.Add(this.buttonExecuter);
-            this.Controls.Add(this.txtBoxDestinationPath);
-            this.Controls.Add(this.txtBoxSourcePath);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FormMain";
-            this.Text = "Arterris USB Sauve";
+            this.Text = "Arterris Transfert";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormMain_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
@@ -199,8 +191,6 @@
         }
 
         #endregion
-
-        private System.Windows.Forms.TextBox txtBoxSourcePath;
         private System.Windows.Forms.Button buttonExecuter;
         private System.Windows.Forms.Button buttonSource;
         private System.Windows.Forms.Button buttonDestination;
@@ -209,12 +199,12 @@
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Label labelSource;
         private System.Windows.Forms.Label labelDestination;
-        private System.Windows.Forms.TextBox txtBoxDestinationPath;
-        private System.Windows.Forms.Label labelPathEnCours;
-        private System.Windows.Forms.TextBox textBoxFichierSource;
         private System.Windows.Forms.Button buttonFichierSource;
         private System.Windows.Forms.Label labelFichierSource;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.ComboBox comboBoxSourcePath;
+        private System.Windows.Forms.ComboBox comboBoxDestination;
+        private System.Windows.Forms.ComboBox comboBoxSourceFile;
     }
 }
 

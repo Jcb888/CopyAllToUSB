@@ -21,11 +21,24 @@ namespace CopyAllToUSB
         configObject co = new configObject();
         string appDataArterris = "";//c'est dans ce repertoire qu'on a les droits et qu'il convient d'écrire
         //string appdata = "";//son ss rep.
+        BindingSource bsLSF = new BindingSource();
+        BindingSource bsSD = new BindingSource();
+        BindingSource bsDD = new BindingSource();
+
+        List<String> ListSourceFile = new List<string>();
+        List<String> ListSourceDirectory= new List<string>();
+        List<String> ListdestinationDirectory = new List<string>();
+
+        
+        
 
         public FormMain()
         {
             InitializeComponent();
             string[] args = Environment.GetCommandLineArgs();//pour récupérer les arguments de la ligne de commande
+            bsLSF.DataSource = ListSourceFile;
+            bsSD.DataSource = ListSourceDirectory;
+            bsDD.DataSource = ListdestinationDirectory;
             // On peut ecrire dans le repertoire AppDatas pas dans programme
             //appdata = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             //appDataArterris = Path.Combine(appdata, "Arterris");
@@ -34,7 +47,7 @@ namespace CopyAllToUSB
             //    Directory.CreateDirectory(appDataArterris);
 
             //string strFilConfig = specificFolder + "\\config.xml";
-            labelPathEnCours.Text = ""; //init
+            //labelPathEnCours.Text = ""; //init
             XmlSerializer xs = new XmlSerializer(typeof(configObject));//pour serialiser en XML la config (sauvegarde des paths src et dst)
             if (!File.Exists(appDataArterris + "\\config.xml"))//si le fichier n'existe pas on le cré avec init à "";
             {
@@ -52,9 +65,10 @@ namespace CopyAllToUSB
             using (StreamReader rd = new StreamReader(appDataArterris + "\\config.xml"))
             {
                 co = xs.Deserialize(rd) as configObject;
-                this.txtBoxSourcePath.Text = co.strSourcePath;
-                this.txtBoxDestinationPath.Text = co.strDestinationPath;
-                this.textBoxFichierSource.Text = co.strFileSourcePath;
+                this.comboBoxSourcePath.Text = co.strSourcePath;
+                this.comboBoxDestination.Text = co.strDestinationPath;
+                this.comboBoxSourceFile.Text = co.strFileSourcePath;
+                //this.comboBoxSourcePath.Text = co.strSourcePath;
 
             }
 
@@ -112,9 +126,9 @@ namespace CopyAllToUSB
 
             try
             {
-                co.strSourcePath = this.txtBoxSourcePath.Text;
-                co.strDestinationPath = this.txtBoxDestinationPath.Text;
-                co.strFileSourcePath = this.textBoxFichierSource.Text;
+                co.strSourcePath = this.comboBoxSourcePath.Text;
+                co.strDestinationPath = this.comboBoxDestination.Text;
+                co.strFileSourcePath = this.comboBoxSourceFile.Text;
 
                 XmlSerializer xs = new XmlSerializer(typeof(configObject));
                 using (StreamWriter wr = new StreamWriter(appDataArterris + "\\config.xml"))
@@ -144,7 +158,9 @@ namespace CopyAllToUSB
                 string[] files = Directory.GetFiles(fbd.SelectedPath);
                 //co.strSourcePath = fbd.SelectedPath.ToString();
                 //txtBoxSourcePath.Text = co.strSourcePath;
-                txtBoxSourcePath.Text = fbd.SelectedPath.ToString();
+                comboBoxSourcePath.Text = fbd.SelectedPath.ToString();
+                ListSourceDirectory.Add(comboBoxSourcePath.Text); //rajout à la list pour reutilisation
+                comboBoxSourcePath.Items.Add(comboBoxSourcePath.Text);
                 //this.creatXML();
             }
         }
@@ -172,19 +188,19 @@ namespace CopyAllToUSB
 
             try
             {
-                labelPathEnCours.Text = "";//reinit
+                //labelPathEnCours.Text = "";//reinit
                 String strFichiersNonCopiés = "";
                 //pour créer l'arborescense
-                foreach (string dirPath in Directory.GetDirectories(txtBoxSourcePath.Text, "*", System.IO.SearchOption.AllDirectories))
-                    Directory.CreateDirectory(dirPath.Replace(txtBoxSourcePath.Text, txtBoxDestinationPath.Text));
+                foreach (string dirPath in Directory.GetDirectories(comboBoxSourcePath.Text, "*", System.IO.SearchOption.AllDirectories))
+                    Directory.CreateDirectory(dirPath.Replace(comboBoxSourcePath.Text, comboBoxDestination.Text));
                 //pour copier les fichiers
-                foreach (string newPath in Directory.GetFiles(txtBoxSourcePath.Text, "*.*", System.IO.SearchOption.AllDirectories))
+                foreach (string newPath in Directory.GetFiles(comboBoxSourcePath.Text, "*.*", System.IO.SearchOption.AllDirectories))
                 {
-                    labelPathEnCours.Text = newPath.ToString();
-                    labelPathEnCours.Refresh();
+                    //labelPathEnCours.Text = newPath.ToString();
+                    //labelPathEnCours.Refresh();
                     if (this.TryOpen(newPath))
                     {
-                        File.Copy(newPath, newPath.Replace(txtBoxSourcePath.Text, txtBoxDestinationPath.Text), true);
+                        File.Copy(newPath, newPath.Replace(comboBoxSourcePath.Text, comboBoxDestination.Text), true);
 
                     }
                     else
@@ -194,7 +210,7 @@ namespace CopyAllToUSB
                     }
                 }
 
-                labelPathEnCours.Text = "Terminée";
+                //labelPathEnCours.Text = "Terminée";
                 if (strFichiersNonCopiés.Length > 1)
                     MessageBox.Show(new Form { TopMost = true }, "Ces fichiers n'ont pas pu être copiés (accès refusé) :\n\r " + strFichiersNonCopiés); //pour avoir la fenetre au premier plans qd option "/hide"
             }
@@ -208,7 +224,7 @@ namespace CopyAllToUSB
         {
             try
             {
-                FileSystem.CopyDirectory(txtBoxSourcePath.Text, txtBoxDestinationPath.Text, UIOption.AllDialogs);
+                FileSystem.CopyDirectory(comboBoxSourcePath.Text, comboBoxDestination.Text, UIOption.AllDialogs);
             }
 
             catch (System.OperationCanceledException oce)
@@ -247,7 +263,7 @@ namespace CopyAllToUSB
         private bool verifierSource()
         {
 
-            if (!Directory.Exists(txtBoxSourcePath.Text))
+            if (!Directory.Exists(comboBoxSourcePath.Text))
             {
                 MessageBox.Show("Le répertoire source n'existe pas.");
                 return false;
@@ -260,7 +276,7 @@ namespace CopyAllToUSB
         private bool verifierDest()
         {
 
-            if (!Directory.Exists(txtBoxDestinationPath.Text))
+            if (!Directory.Exists(comboBoxDestination.Text))
             {
                 MessageBox.Show("Le répertoire destination n'existe pas");
                 return false;
@@ -292,7 +308,7 @@ namespace CopyAllToUSB
         private void buttonDestination_Click(object sender, EventArgs e)
         {
             FolderBrowserDialog fbd = new FolderBrowserDialog();
-            fbd.SelectedPath = this.txtBoxDestinationPath.Text;
+            fbd.SelectedPath = this.comboBoxDestination.Text;
 
             DialogResult result = fbd.ShowDialog();
 
@@ -300,7 +316,7 @@ namespace CopyAllToUSB
             {
                 string[] files = Directory.GetFiles(fbd.SelectedPath);
                 co.strDestinationPath = fbd.SelectedPath.ToString();
-                this.txtBoxDestinationPath.Text = co.strDestinationPath;
+                this.comboBoxDestination.Text = co.strDestinationPath;
                 this.creatXML();
             }
         }
@@ -348,7 +364,7 @@ namespace CopyAllToUSB
                     string file = openFileDialog1.FileName;
                     //co.strSourcePath = fbd.SelectedPath.ToString();
                     //txtBoxSourcePath.Text = co.strSourcePath;
-                    textBoxFichierSource.Text = openFileDialog1.FileName;
+                    comboBoxSourceFile.Text = openFileDialog1.FileName;
                     //this.creatXML();
                 }
             }
@@ -357,11 +373,11 @@ namespace CopyAllToUSB
 
         private void button1_Click(object sender, EventArgs e)
         {
-            String destPath = txtBoxDestinationPath.Text + "\\" + Path.GetFileName(textBoxFichierSource.Text);
+            String destPath = comboBoxDestination.Text + "\\" + Path.GetFileName(comboBoxSourceFile.Text);
 
             try
             {
-                FileSystem.CopyFile(textBoxFichierSource.Text, destPath, UIOption.AllDialogs);
+                FileSystem.CopyFile(comboBoxSourceFile.Text, destPath, UIOption.AllDialogs);
             }
 
             catch (System.OperationCanceledException /*oce*/)
@@ -393,7 +409,7 @@ namespace CopyAllToUSB
                 MessageBox.Show("Erreur lors de la copie: " + ex.StackTrace.ToString());
             }
 
-            MessageBox.Show("Fichier : " + Path.GetFileName(textBoxFichierSource.Text) +" copié", "OK", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show("Fichier : " + Path.GetFileName(comboBoxSourceFile.Text) +" copié", "OK", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
         }
     }
