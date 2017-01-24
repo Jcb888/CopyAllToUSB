@@ -159,8 +159,9 @@ namespace CopyAllToUSB
                 //co.strSourcePath = fbd.SelectedPath.ToString();
                 //txtBoxSourcePath.Text = co.strSourcePath;
                 comboBoxSourcePath.Text = fbd.SelectedPath.ToString();
-                ListSourceDirectory.Add(comboBoxSourcePath.Text); //rajout à la list pour reutilisation
-                comboBoxSourcePath.Items.Add(comboBoxSourcePath.Text);
+                //ListSourceDirectory.Add(comboBoxSourcePath.Text); //rajout à la list pour reutilisation
+                //comboBoxSourcePath.Items.Add(comboBoxSourcePath.Text);
+                bsSD.Add(comboBoxSourceFile);
                 //this.creatXML();
             }
         }
